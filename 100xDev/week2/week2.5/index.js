@@ -20,31 +20,46 @@
 
 
 // app.listen(3000);
-const express = require("express")
+const express = require("express");
 const app = express();
 
 const user = [{
-    name:"John",
-    kidney:[{
-            healthy:false
-        }]
-}]
+    name: "John",
+    kidneys: [{
+        healthy: false
+    }]
+}];
+app.use(express.json());
 
-app.get("/",function(req,res){
-    const johnkidney = user[0].kidney;
-    const numberOfKidney = johnkidney.length;
-    let  numberOfHealthyKidney = 0;
-    for(let i=0;i<johnkidney.length;i++){
-        if(johnkidney[i].healthy){
-            numberOfHealthyKidney = numberOfHealthyKidney + 1;
+// GET endpoint (correctly defined)
+app.get("/", function(req, res) {
+    const johnKidneys = user[0].kidneys;
+    const numberOfKidneys = johnKidneys.length;
+    let numberOfHealthyKidneys = 0;
+
+    for (let i = 0; i < johnKidneys.length; i++) {
+        if (johnKidneys[i].healthy) {
+            numberOfHealthyKidneys++;
         }
     }
-    const numberOfUnhealthyKidney = numberOfKidney-numberOfHealthyKidney;
+
+    const numberOfUnhealthyKidneys = numberOfKidneys - numberOfHealthyKidneys;
     res.json({
-        johnkidney,
-        numberOfKidney,
-        numberOfHealthyKidney,
-        numberOfUnhealthyKidney
-    })
-})
-app.listen(3000)
+        numberOfKidneys,
+        numberOfHealthyKidneys,
+        numberOfUnhealthyKidneys
+    });
+});
+
+// POST endpoint moved OUTSIDE the GET handler
+app.post("/", function(req, res) {
+    const isHealthy = req.body.isHealthy;
+    user[0].kidneys.push({
+        healthy: isHealthy
+    });
+    res.json({
+        msg: "Done"
+    });
+});
+
+app.listen(3000);
